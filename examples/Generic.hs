@@ -24,9 +24,25 @@ runColorMemoized :: Color -> Int
 runColorMemoized = memo runColor
 
 main :: IO ()
-main =
-    do
-        putStrLn "first call (should take a few seconds): "
-        print $ runColorMemoized (NamedColor "")
-        putStrLn "cached call (should be instantaneous): "
-        print $ runColorMemoized (NamedColor "")
+main = do
+    -- putStrLn "first call (should take a few seconds): "
+    -- print $ runColorMemoized (NamedColor "")
+    -- putStrLn "cached call (should be instantaneous): "
+    -- print $ runColorMemoized (NamedColor "")
+    putStrLn "first call (should take a few seconds): "
+    print $ fibNaive 42
+    putStrLn "cached call (should be instantaneous): "
+    print $ fibMemo 42
+
+fibNaive :: Integer -> Integer
+fibNaive 0 = 0
+fibNaive 1 = 1
+fibNaive n = fibNaive (n - 1) + fibNaive (n - 2)
+
+fibFix :: (Integer -> Integer) -> Integer -> Integer
+fibFix _ 0 = 0
+fibFix _ 1 = 1
+fibFix next n = next (n - 1) + next (n - 2)
+
+fibMemo :: Integer -> Integer
+fibMemo = memoFix fibFix
