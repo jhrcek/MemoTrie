@@ -2,7 +2,9 @@
 {-# LANGUAGE TypeFamilies #-}
 {-# LANGUAGE TypeOperators #-}
 
+import Control.Monad (void)
 import Data.MemoTrie
+import GHC.Debug.Stub (Box (Box), pause, saveClosures, withGhcDebug)
 import GHC.Generics (Generic)
 
 data Color
@@ -24,15 +26,18 @@ runColorMemoized :: Color -> Int
 runColorMemoized = memo runColor
 
 main :: IO ()
-main = do
-    -- putStrLn "first call (should take a few seconds): "
-    -- print $ runColorMemoized (NamedColor "")
-    -- putStrLn "cached call (should be instantaneous): "
-    -- print $ runColorMemoized (NamedColor "")
+main = withGhcDebug $ do
     putStrLn "first call (should take a few seconds): "
-    print $ fibNaive 42
+    print $ runColorMemoized (NamedColor "")
     putStrLn "cached call (should be instantaneous): "
-    print $ fibMemo 42
+    print $ runColorMemoized (NamedColor "")
+    saveClosures [Box runColorMemoized]
+    void getLine
+
+-- putStrLn "first call (should take a few seconds): "
+-- print $ fibNaive 42
+-- putStrLn "cached call (should be instantaneous): "
+-- print $ fibMemo 42
 
 fibNaive :: Integer -> Integer
 fibNaive 0 = 0
