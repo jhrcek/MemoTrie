@@ -1,0 +1,23 @@
+# How does a Trie data structure look for functions of type `Int -> r` ?
+
+Int :->: r -- newtype Int :->: r = IntTrie (Word :->: r)
+IntTrie (Word :->: r) -- newtype Word :->: r = WordTrie ([Bool] :->: r)
+IntTrie (WordTrie ([Bool] :->: r)) -- newtype [a] :->: r = ListTrie (Either () (a, [a]) :->: r)
+IntTrie (WordTrie (ListTrie (Either () (Bool, [Bool]) :->: r))) -- data (Either a b) :->: r = EitherTrie (a :->: r) (b :->: r)
+IntTrie (WordTrie (ListTrie (EitherTrie (() :->: r) ((Bool, [Bool]) :->: r)))) -- newtype () :->: r = UnitTrie r
+IntTrie (WordTrie (ListTrie (EitherTrie (UnitTrie r) ((Bool, [Bool]) :->: r)))) -- newtype (a, b) :->: r = PairTrie (a :->: (b :->: r))
+IntTrie (WordTrie (ListTrie (EitherTrie (UnitTrie r) (PairTrie (Bool :-> ([Bool] :->: r)))))) -- data Bool :->: r = BoolTrie r r
+IntTrie (WordTrie (ListTrie (EitherTrie (UnitTrie r) (PairTrie (BoolTrie ([Bool] :->: r) ([Bool] :->: r))))))
+
+
+
+
+newtype Int :->: r = IntTrie (Word :->: r)
+newtype Word :->: r = WordTrie ([Bool] :->: r)
+newtype [a] :->: r = ListTrie (Either () (a, [a]) :->: r)
+newtype (a, b) :->: r = PairTrie (a :->: (b :->: r))
+newtype () :->: r = UnitTrie r
+newtype Char :->: a = CharTrie (Int :->: a)
+data (Either a b) :->: r = EitherTrie (a :->: r) (b :->: r)
+data (Maybe a) :->: b = MaybeTrie b (a :->: b)
+data Bool :->: r = BoolTrie r r

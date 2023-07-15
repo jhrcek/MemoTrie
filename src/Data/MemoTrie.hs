@@ -232,13 +232,13 @@ instance HasTrie Bool where
 -}
 
 instance HasTrie a => HasTrie (Maybe a) where
-    data (:->:) (Maybe a) b = MaybeTrie b (a :->: b)
+    data Maybe a :->: b = MaybeTrie b (a :->: b)
     trie f = MaybeTrie (f Nothing) (trie (f . Just))
     untrie (MaybeTrie nothing_val a_trie) = maybe nothing_val (untrie a_trie)
     enumerate (MaybeTrie nothing_val a_trie) = (Nothing, nothing_val) : enum' Just a_trie
 
 instance (HasTrie a, HasTrie b) => HasTrie (Either a b) where
-    data (Either a b) :->: x = EitherTrie (a :->: x) (b :->: x)
+    data Either a b :->: x = EitherTrie (a :->: x) (b :->: x)
     trie f = EitherTrie (trie (f . Left)) (trie (f . Right))
     untrie (EitherTrie s t) = either (untrie s) (untrie t)
     enumerate (EitherTrie s t) = enum' Left s `weave` enum' Right t
@@ -569,7 +569,7 @@ instance HasTrie (V1 x) where
 
 -- | just like @()@
 instance HasTrie (U1 x) where
-    data U1 x :->: b = U1Trie b
+    newtype U1 x :->: b = U1Trie b
     trie f = U1Trie (f U1)
     untrie (U1Trie b) U1 = b
     enumerate (U1Trie b) = [(U1, b)]
@@ -590,14 +590,14 @@ instance (HasTrie (f x), HasTrie (g x)) => HasTrie ((f :*: g) x) where
 
 -- | wraps @a@
 instance HasTrie a => HasTrie (K1 i a x) where
-    data K1 i a x :->: b = K1Trie (a :->: b)
+    newtype K1 i a x :->: b = K1Trie (a :->: b)
     trie f = K1Trie (trie (f . K1))
     untrie (K1Trie t) (K1 a) = untrie t a
     enumerate (K1Trie t) = enum' K1 t
 
 -- | wraps @f x@
 instance HasTrie (f x) => HasTrie (M1 i t f x) where
-    data M1 i t f x :->: b = M1Trie (f x :->: b)
+    newtype M1 i t f x :->: b = M1Trie (f x :->: b)
     trie f = M1Trie (trie (f . M1))
     untrie (M1Trie t) (M1 a) = untrie t a
     enumerate (M1Trie t) = enum' M1 t
