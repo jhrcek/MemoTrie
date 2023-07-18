@@ -337,21 +337,25 @@ instance HasTrie Word where
     trie f = WordTrie (trie (f . unbits))
     untrie (WordTrie t) = untrie t . bits
     enumerate (WordTrie t) = enum' unbits t
+
 instance HasTrie Word8 where
     newtype Word8 :->: a = Word8Trie ([Bool] :->: a)
     trie f = Word8Trie (trie (f . unbits))
     untrie (Word8Trie t) = untrie t . bits
     enumerate (Word8Trie t) = enum' unbits t
+
 instance HasTrie Word16 where
     newtype Word16 :->: a = Word16Trie ([Bool] :->: a)
     trie f = Word16Trie (trie (f . unbits))
     untrie (Word16Trie t) = untrie t . bits
     enumerate (Word16Trie t) = enum' unbits t
+
 instance HasTrie Word32 where
     newtype Word32 :->: a = Word32Trie ([Bool] :->: a)
     trie f = Word32Trie (trie (f . unbits))
     untrie (Word32Trie t) = untrie t . bits
     enumerate (Word32Trie t) = enum' unbits t
+
 instance HasTrie Word64 where
     newtype Word64 :->: a = Word64Trie ([Bool] :->: a)
     trie f = Word64Trie (trie (f . unbits))
@@ -480,33 +484,6 @@ The implementation instances then follow from applying 'trie' to both
 sides of each of these morphism laws.
 
 -}
-
-{-
-instance (HasTrie a, Monoid b) => Monoid (a :->: b) where
-  mempty  = trie mempty
-  s `mappend` t = trie (untrie s `mappend` untrie t)
-
-instance HasTrie a => Functor ((:->:) a) where
-  fmap f t      = trie (fmap f (untrie t))
-
-instance HasTrie a => Applicative ((:->:) a) where
-  pure b        = trie (pure b)
-  tf <*> tx     = trie (untrie tf <*> untrie tx)
-
-instance HasTrie a => Monad ((:->:) a) where
-  return a      = trie (return a)
-  u >>= k       = trie (untrie u >>= untrie . k)
-
--- instance Category (:->:) where
---   id            = trie id
---   s . t         = trie (untrie s . untrie t)
-
--- instance Arrow (:->:) where
---   arr f         = trie (arr f)
---   first t       = trie (first (untrie t))
--}
-
--- Simplify, using inTrie, inTrie2
 
 instance (HasTrie a, Monoid b) => Monoid (a :->: b) where
     mempty = trie mempty
